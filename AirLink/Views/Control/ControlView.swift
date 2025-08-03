@@ -45,9 +45,9 @@ struct ControlView: View {
             .background(
                 LinearGradient(
                     colors: [
-                        Color.black,
+                        Color(uiColor: .systemBackground),
                         Color.blue.opacity(0.1),
-                        Color.black
+                        Color(uiColor: .systemBackground)
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -67,7 +67,6 @@ struct ControlView: View {
                     .presentationDragIndicator(.visible)
             }
         }
-        .preferredColorScheme(.dark)
         .onAppear {
             if !appModel.isConnected && !appModel.isConnecting {
                 appModel.startScanning()
@@ -89,11 +88,11 @@ private struct ConnectionStatusCard: View {
                     Text(connectionStatusTitle)
                         .font(.headline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.primary)
                     
                     Text(connectionStatusSubtitle)
                         .font(.subheadline)
-                        .foregroundStyle(.white.opacity(0.7))
+                        .foregroundStyle(.secondary)
                 }
                 
                 Spacer()
@@ -111,7 +110,7 @@ private struct ConnectionStatusCard: View {
                         .foregroundStyle(.orange)
                     Text(error)
                         .font(.caption)
-                        .foregroundStyle(.white.opacity(0.8))
+                        .foregroundStyle(.secondary)
                     Spacer()
                 }
             }
@@ -157,7 +156,7 @@ private struct GimbalAttitudeCard: View {
             Text("Gimbal Attitude")
                 .font(.headline)
                 .fontWeight(.semibold)
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             HStack(spacing: 24) {
@@ -203,12 +202,12 @@ private struct AttitudeIndicator: View {
             Text(title)
                 .font(.caption)
                 .fontWeight(.medium)
-                .foregroundStyle(.white.opacity(0.7))
+                .foregroundStyle(.secondary)
             
             Text("\(value, specifier: "%.1f")°")
                 .font(.title3)
                 .fontWeight(.bold)
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
                 .monospacedDigit()
         }
         .frame(maxWidth: .infinity)
@@ -224,7 +223,7 @@ private struct ModeSelectionCard: View {
             Text("Gimbal Mode")
                 .font(.headline)
                 .fontWeight(.semibold)
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             LazyVGrid(columns: [
@@ -253,19 +252,19 @@ private struct ModeButton: View {
             VStack(spacing: 8) {
                 Image(systemName: mode.iconName)
                     .font(.title2)
-                    .foregroundStyle(isSelected ? .black : .white)
+                    .foregroundStyle(isSelected ? Color(uiColor: .systemBackground) : .primary)
                 
                 Text(mode.displayName)
                     .font(.caption)
                     .fontWeight(.semibold)
-                    .foregroundStyle(isSelected ? .black : .white)
+                    .foregroundStyle(isSelected ? Color(uiColor: .systemBackground) : .primary)
                     .multilineTextAlignment(.center)
             }
             .frame(maxWidth: .infinity)
             .frame(height: 80)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? .white : .white.opacity(0.1))
+                    .fill(isSelected ? .primary : Color(uiColor: .systemGray5))
             )
         }
         .buttonStyle(.plain)
@@ -283,7 +282,7 @@ private struct QuickActionsCard: View {
             Text("Quick Actions")
                 .font(.headline)
                 .fontWeight(.semibold)
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             HStack(spacing: 12) {
@@ -325,13 +324,13 @@ private struct QuickActionButton: View {
                 Text(title)
                     .font(.caption)
                     .fontWeight(.semibold)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.primary)
             }
             .frame(maxWidth: .infinity)
             .frame(height: 80)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(.white.opacity(0.1))
+                    .fill(Color(uiColor: .systemGray5))
             )
         }
         .buttonStyle(.plain)

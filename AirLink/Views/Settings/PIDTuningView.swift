@@ -44,7 +44,7 @@ struct PIDTuningView: View {
             .scrollContentBackground(.hidden)
             .background(
                 LinearGradient(
-                    colors: [Color.black, Color.purple.opacity(0.2)],
+                    colors: [Color(uiColor: .systemBackground), Color.purple.opacity(0.2)],
                     startPoint: .top,
                     endPoint: .bottom
                 )
@@ -77,7 +77,6 @@ struct PIDTuningView: View {
                 Text("This will reset all PID values to their default settings. This action cannot be undone.")
             }
         }
-        .preferredColorScheme(.dark)
         .onAppear {
             loadCurrentValues()
         }

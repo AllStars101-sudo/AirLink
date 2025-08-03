@@ -35,7 +35,6 @@ struct MainTabView: View {
                 .tag(Tab.settings)
         }
         .tint(.blue)
-        .preferredColorScheme(.dark)
     }
 }
 

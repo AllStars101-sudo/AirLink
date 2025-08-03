@@ -42,9 +42,9 @@ struct StatusView: View {
             .background(
                 LinearGradient(
                     colors: [
-                        Color.black,
+                        Color(uiColor: .systemBackground),
                         Color.green.opacity(0.1),
-                        Color.black
+                        Color(uiColor: .systemBackground)
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -54,7 +54,6 @@ struct StatusView: View {
             .navigationTitle("Status Monitor")
             .navigationBarTitleDisplayMode(.large)
         }
-        .preferredColorScheme(.dark)
         .onAppear {
             startDataCollection()
         }
@@ -107,18 +106,18 @@ private struct AttitudeChartCard: View {
             Text("Real-time Attitude")
                 .font(.headline)
                 .fontWeight(.semibold)
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             if data.isEmpty {
                 VStack(spacing: 8) {
                     Image(systemName: "chart.line.uptrend.xyaxis")
                         .font(.largeTitle)
-                        .foregroundStyle(.white.opacity(0.3))
+                        .foregroundStyle(.secondary)
                     
                     Text("Collecting data...")
                         .font(.subheadline)
-                        .foregroundStyle(.white.opacity(0.7))
+                        .foregroundStyle(.secondary)
                 }
                 .frame(height: 200)
             } else {
@@ -149,9 +148,9 @@ private struct AttitudeChartCard: View {
                 .chartYAxis {
                     AxisMarks(values: .stride(by: 45)) { _ in
                         AxisGridLine()
-                            .foregroundStyle(.white.opacity(0.2))
+                            .foregroundStyle(.secondary.opacity(0.3))
                         AxisValueLabel()
-                            .foregroundStyle(.white.opacity(0.7))
+                            .foregroundStyle(.secondary)
                     }
                 }
                 .chartLegend(position: .bottom) {
@@ -162,7 +161,7 @@ private struct AttitudeChartCard: View {
                                 .frame(width: 8, height: 8)
                             Text("Pitch")
                                 .font(.caption)
-                                .foregroundStyle(.white.opacity(0.7))
+                                .foregroundStyle(.secondary)
                         }
                         
                         HStack(spacing: 4) {
@@ -171,7 +170,7 @@ private struct AttitudeChartCard: View {
                                 .frame(width: 8, height: 8)
                             Text("Roll")
                                 .font(.caption)
-                                .foregroundStyle(.white.opacity(0.7))
+                                .foregroundStyle(.secondary)
                         }
                         
                         HStack(spacing: 4) {
@@ -180,7 +179,7 @@ private struct AttitudeChartCard: View {
                                 .frame(width: 8, height: 8)
                             Text("Yaw")
                                 .font(.caption)
-                                .foregroundStyle(.white.opacity(0.7))
+                                .foregroundStyle(.secondary)
                         }
                     }
                 }
@@ -200,7 +199,7 @@ private struct DetailedStatusCard: View {
             Text("Gimbal Status")
                 .font(.headline)
                 .fontWeight(.semibold)
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             VStack(spacing: 16) {
@@ -253,14 +252,14 @@ private struct StatusRow: View {
             
             Text(title)
                 .font(.subheadline)
-                .foregroundStyle(.white.opacity(0.7))
+                .foregroundStyle(.secondary)
             
             Spacer()
             
             Text(value)
                 .font(.subheadline)
                 .fontWeight(.medium)
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
         }
     }
 }
@@ -274,7 +273,7 @@ private struct SystemHealthCard: View {
             Text("System Health")
                 .font(.headline)
                 .fontWeight(.semibold)
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             LazyVGrid(columns: [
@@ -325,7 +324,7 @@ private struct HealthIndicator: View {
             Text(title)
                 .font(.caption)
                 .fontWeight(.medium)
-                .foregroundStyle(.white.opacity(0.7))
+                .foregroundStyle(.secondary)
             
             Text(status.displayName)
                 .font(.caption2)
@@ -336,7 +335,7 @@ private struct HealthIndicator: View {
         .frame(height: 80)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(.white.opacity(0.05))
+                .fill(Color(uiColor: .systemGray6))
                 .stroke(status.color.opacity(0.3), lineWidth: 1)
         )
     }
@@ -373,11 +372,11 @@ private struct NotConnectedCard: View {
             Text("Not Connected")
                 .font(.title2)
                 .fontWeight(.bold)
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
             
             Text("Connect to your AirFrame gimbal to view real-time status information")
                 .font(.subheadline)
-                .foregroundStyle(.white.opacity(0.7))
+                .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
         }

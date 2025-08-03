@@ -20,9 +20,9 @@ struct OnboardingView: View {
                 // Background gradient
                 LinearGradient(
                     colors: [
-                        Color.black,
+                        Color(uiColor: .systemBackground),
                         Color.blue.opacity(0.3),
-                        Color.black
+                        Color(uiColor: .systemBackground)
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -69,7 +69,6 @@ struct OnboardingView: View {
                 }
             }
         }
-        .preferredColorScheme(.dark)
     }
 }
 
@@ -100,7 +99,7 @@ struct OnboardingPageView: View {
             // Title
             Text(page.title)
                 .font(.system(.largeTitle, design: .default, weight: .bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
             
@@ -110,7 +109,7 @@ struct OnboardingPageView: View {
             // Description
             Text(page.description)
                 .font(.title3)
-                .foregroundStyle(.white.opacity(0.8))
+                .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .lineLimit(nil)
                 .padding(.horizontal, 40)
@@ -130,7 +129,8 @@ struct PageIndicator: View {
         HStack(spacing: 8) {
             ForEach(0..<totalPages, id: \.self) { index in
                 Circle()
-                    .fill(index == currentPage ? .white : .white.opacity(0.3))
+                    .fill(index == currentPage ? .primary : .secondary)
+                    .opacity(index == currentPage ? 1.0 : 0.5)
                     .frame(width: 8, height: 8)
                     .scaleEffect(index == currentPage ? 1.2 : 1.0)
                     .animation(.easeInOut(duration: 0.3), value: currentPage)
@@ -153,12 +153,12 @@ struct GetStartedButton: View {
                     .font(.headline)
                     .fontWeight(.semibold)
             }
-            .foregroundStyle(.black)
+            .foregroundStyle(Color(uiColor: .systemBackground))
             .frame(maxWidth: .infinity)
             .frame(height: 56)
             .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(.white)
+                    .fill(.primary)
             )
         }
         .buttonStyle(.plain)

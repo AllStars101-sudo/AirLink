@@ -198,9 +198,9 @@ struct SettingsView: View {
             .background(
                 LinearGradient(
                     colors: [
-                        Color.black,
+                        Color(uiColor: .systemBackground),
                         Color.purple.opacity(0.1),
-                        Color.black
+                        Color(uiColor: .systemBackground)
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -208,7 +208,6 @@ struct SettingsView: View {
                 .ignoresSafeArea()
             )
         }
-        .preferredColorScheme(.dark)
         .sheet(isPresented: $showingAbout) {
             AboutView()
         }
@@ -247,11 +246,11 @@ private struct AboutView: View {
                         Text("AirLink")
                             .font(.largeTitle)
                             .fontWeight(.bold)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.primary)
                         
                         Text("Version 1.0.0")
                             .font(.subheadline)
-                            .foregroundStyle(.white.opacity(0.7))
+                            .foregroundStyle(.secondary)
                     }
                     .padding(.top, 40)
                     
@@ -260,11 +259,11 @@ private struct AboutView: View {
                         Text("Professional Gimbal Control")
                             .font(.title2)
                             .fontWeight(.semibold)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.primary)
                         
                         Text("AirLink connects your iPhone to the AirFrame 3-axis gimbal system, providing real-time control and monitoring for professional stabilization. Perfect for filmmakers, content creators, and photography enthusiasts.")
                             .font(.body)
-                            .foregroundStyle(.white.opacity(0.8))
+                            .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                             .lineSpacing(4)
                     }
@@ -275,7 +274,7 @@ private struct AboutView: View {
                         Text("Features")
                             .font(.title3)
                             .fontWeight(.semibold)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.primary)
                         
                         FeatureRow(
                             iconName: "wifi",
@@ -308,7 +307,7 @@ private struct AboutView: View {
             }
             .background(
                 LinearGradient(
-                    colors: [Color.black, Color.blue.opacity(0.2)],
+                    colors: [Color(uiColor: .systemBackground), Color.blue.opacity(0.2)],
                     startPoint: .top,
                     endPoint: .bottom
                 )
@@ -324,7 +323,6 @@ private struct AboutView: View {
                 }
             }
         }
-        .preferredColorScheme(.dark)
     }
 }
 
@@ -344,11 +342,11 @@ private struct FeatureRow: View {
                 Text(title)
                     .font(.headline)
                     .fontWeight(.semibold)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.primary)
                 
                 Text(description)
                     .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(.secondary)
                     .lineLimit(nil)
             }
         }

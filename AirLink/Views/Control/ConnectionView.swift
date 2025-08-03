@@ -23,11 +23,11 @@ struct ConnectionView: View {
                     Text("Connect to AirFrame")
                         .font(.title2)
                         .fontWeight(.bold)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.primary)
                     
                     Text("Make sure your AirFrame gimbal is powered on and nearby")
                         .font(.subheadline)
-                        .foregroundStyle(.white.opacity(0.7))
+                        .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
                 }
@@ -44,7 +44,7 @@ struct ConnectionView: View {
             .padding()
             .background(
                 LinearGradient(
-                    colors: [Color.black, Color.blue.opacity(0.2)],
+                    colors: [Color(uiColor: .systemBackground), Color.blue.opacity(0.2)],
                     startPoint: .top,
                     endPoint: .bottom
                 )
@@ -60,7 +60,6 @@ struct ConnectionView: View {
                 }
             }
         }
-        .preferredColorScheme(.dark)
     }
     
     @ViewBuilder
@@ -77,11 +76,11 @@ struct ConnectionView: View {
                         Text("Connected")
                             .font(.headline)
                             .fontWeight(.semibold)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.primary)
                         
                         Text(appModel.deviceName)
                             .font(.subheadline)
-                            .foregroundStyle(.white.opacity(0.7))
+                            .foregroundStyle(.secondary)
                     }
                     
                     Spacer()
@@ -103,11 +102,11 @@ struct ConnectionView: View {
                         Text("Searching...")
                             .font(.headline)
                             .fontWeight(.semibold)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.primary)
                         
                         Text("Looking for AirFrame gimbal")
                             .font(.subheadline)
-                            .foregroundStyle(.white.opacity(0.7))
+                            .foregroundStyle(.secondary)
                     }
                     
                     Spacer()
@@ -130,11 +129,11 @@ struct ConnectionView: View {
                         Text("Not Connected")
                             .font(.headline)
                             .fontWeight(.semibold)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.primary)
                         
                         Text("Tap 'Scan' to search for devices")
                             .font(.subheadline)
-                            .foregroundStyle(.white.opacity(0.7))
+                            .foregroundStyle(.secondary)
                     }
                     
                     Spacer()
@@ -153,7 +152,7 @@ struct ConnectionView: View {
                         
                         Text(error)
                             .font(.caption)
-                            .foregroundStyle(.white.opacity(0.8))
+                            .foregroundStyle(.secondary)
                         
                         Spacer()
                     }
@@ -196,7 +195,7 @@ private struct PrimaryButtonStyle: ButtonStyle {
         configuration.label
             .font(.headline)
             .fontWeight(.semibold)
-            .foregroundStyle(.white)
+            .foregroundStyle(Color(uiColor: .systemBackground))
             .frame(maxWidth: .infinity)
             .frame(height: 50)
             .background(
@@ -213,13 +212,13 @@ private struct SecondaryButtonStyle: ButtonStyle {
         configuration.label
             .font(.headline)
             .fontWeight(.semibold)
-            .foregroundStyle(.white)
+            .foregroundStyle(.primary)
             .frame(maxWidth: .infinity)
             .frame(height: 50)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(.white.opacity(0.2))
-                    .stroke(.white.opacity(0.3), lineWidth: 1)
+                    .fill(Color(uiColor: .systemGray5))
+                    .stroke(Color(uiColor: .systemGray4), lineWidth: 1)
             )
             .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
             .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
