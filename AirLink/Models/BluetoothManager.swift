@@ -36,6 +36,12 @@ class BluetoothManager: NSObject {
     private let gimbalModeCharUUID = CBUUID(string: "2a79d494-436f-45b6-890f-563534ab2c84")
     private let gimbalControlCharUUID = CBUUID(string: "f7a7a5a8-5e58-4c8d-9b6e-3aa5d6c5b768")
     
+    // PID Characteristics (from AirOS sample)
+    private let pitchPIDCharUUID = CBUUID(string: "b16b472c-88a4-4734-9f85-01458e08d669")
+    private let rollPIDCharUUID = CBUUID(string: "8184457e-85a8-4217-a9a3-a7d57947a612")
+    private let yawPIDCharUUID = CBUUID(string: "5d9b73b3-81e0-4368-910a-e322359b8676")
+    private let kalmanParamsCharUUID = CBUUID(string: "6e13e51a-f3c2-46a4-b203-92147395c5d0")
+    
     // Characteristics references
     private var pitchAngleCharacteristic: CBCharacteristic?
     private var rollAngleCharacteristic: CBCharacteristic?
@@ -43,6 +49,12 @@ class BluetoothManager: NSObject {
     private var gimbalStatusCharacteristic: CBCharacteristic?
     private var gimbalModeCharacteristic: CBCharacteristic?
     private var gimbalControlCharacteristic: CBCharacteristic?
+    
+    // PID Characteristics references
+    private var pitchPIDCharacteristic: CBCharacteristic?
+    private var rollPIDCharacteristic: CBCharacteristic?
+    private var yawPIDCharacteristic: CBCharacteristic?
+    private var kalmanParamsCharacteristic: CBCharacteristic?
     
     // Angle data tracking
     private var lastPitch: Float = 0.0
@@ -83,6 +95,34 @@ class BluetoothManager: NSObject {
         guard let data = command.data(using: .utf8) else { return }
         peripheral.writeValue(data, for: characteristic, type: .withResponse)
     }
+    
+    // MARK: - PID Tuning Methods
+    func setPitchPID(p: Float, i: Float, d: Float) {
+        guard let characteristic = pitchPIDCharacteristic,
+              let peripheral = gimbalPeripheral else { return }
+        
+        var pidData = PIDSettings(p: p, i: i, d: d)
+        let data = Data(bytes: &pidData, count: MemoryLayout<PIDSettings>.size)
+        peripheral.writeValue(data, for: characteristic, type: .withResponse)
+    }
+    
+    func setRollPID(p: Float, i: Float, d: Float) {
+        guard let characteristic = rollPIDCharacteristic,
+              let peripheral = gimbalPeripheral else { return }
+        
+        var pidData = PIDSettings(p: p, i: i, d: d)
+        let data = Data(bytes: &pidData, count: MemoryLayout<PIDSettings>.size)
+        peripheral.writeValue(data, for: characteristic, type: .withResponse)
+    }
+    
+    func setYawPID(p: Float, i: Float, d: Float) {
+        guard let characteristic = yawPIDCharacteristic,
+              let peripheral = gimbalPeripheral else { return }
+        
+        var pidData = PIDSettings(p: p, i: i, d: d)
+        let data = Data(bytes: &pidData, count: MemoryLayout<PIDSettings>.size)
+        peripheral.writeValue(data, for: characteristic, type: .withResponse)
+    }
 }
 
 // MARK: - CBCentralManagerDelegate
@@ -96,11 +136,16 @@ extension BluetoothManager: CBCentralManagerDelegate {
     }
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        // Found the AirOS Gimbal
-        gimbalPeripheral = peripheral
-        gimbalPeripheral?.delegate = self
-        centralManager.connect(peripheral, options: nil)
-        centralManager.stopScan()
+        // Check if this is the AirOS Gimbal device
+        let deviceName = peripheral.name ?? advertisementData[CBAdvertisementDataLocalNameKey] as? String ?? ""
+        
+        if deviceName == "AirOS Gimbal" {
+            print("📱 Found AirOS Gimbal: \(deviceName)")
+            gimbalPeripheral = peripheral
+            gimbalPeripheral?.delegate = self
+            centralManager.connect(peripheral, options: nil)
+            centralManager.stopScan()
+        }
     }
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
@@ -126,8 +171,12 @@ extension BluetoothManager: CBPeripheralDelegate {
         for service in services {
             if service.uuid == serviceUUID {
                 peripheral.discoverCharacteristics([
+                    // Read-only characteristics
                     pitchAngleCharUUID, rollAngleCharUUID, yawAngleCharUUID, gimbalStatusCharUUID,
-                    gimbalModeCharUUID, gimbalControlCharUUID
+                    // Read-write characteristics
+                    gimbalModeCharUUID, gimbalControlCharUUID,
+                    // PID characteristics
+                    pitchPIDCharUUID, rollPIDCharUUID, yawPIDCharUUID, kalmanParamsCharUUID
                 ], for: service)
             }
         }
@@ -154,6 +203,14 @@ extension BluetoothManager: CBPeripheralDelegate {
                 gimbalModeCharacteristic = characteristic
             case gimbalControlCharUUID:
                 gimbalControlCharacteristic = characteristic
+            case pitchPIDCharUUID:
+                pitchPIDCharacteristic = characteristic
+            case rollPIDCharUUID:
+                rollPIDCharacteristic = characteristic
+            case yawPIDCharUUID:
+                yawPIDCharacteristic = characteristic
+            case kalmanParamsCharUUID:
+                kalmanParamsCharacteristic = characteristic
             default:
                 break
             }
@@ -196,4 +253,11 @@ extension BluetoothManager: CBPeripheralDelegate {
         
         delegate?.bluetoothManagerDidReceiveAngleData(pitch: lastPitch, roll: lastRoll, yaw: lastYaw)
     }
+}
+
+// MARK: - Supporting Types
+struct PIDSettings {
+    let p: Float
+    let i: Float
+    let d: Float
 }

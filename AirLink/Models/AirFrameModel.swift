@@ -64,6 +64,26 @@ class AirFrameModel: NSObject {
         bluetoothManager?.sendCommand("reset_yaw")
     }
     
+    func setPitchPID(p: Float, i: Float, d: Float) {
+        bluetoothManager?.setPitchPID(p: p, i: i, d: d)
+    }
+    
+    func setRollPID(p: Float, i: Float, d: Float) {
+        bluetoothManager?.setRollPID(p: p, i: i, d: d)
+    }
+    
+    func setYawPID(p: Float, i: Float, d: Float) {
+        bluetoothManager?.setYawPID(p: p, i: i, d: d)
+    }
+    
+    func saveSettings() {
+        bluetoothManager?.sendCommand("save")
+    }
+    
+    func restoreDefaults() {
+        bluetoothManager?.sendCommand("defaults")
+    }
+    
     func completeOnboarding() {
         hasCompletedOnboarding = true
         saveUserDefaults()

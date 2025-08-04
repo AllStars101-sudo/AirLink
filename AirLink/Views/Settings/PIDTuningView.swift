@@ -222,11 +222,18 @@ struct PIDTuningView: View {
     
     private func savePIDValues() {
         // Send PID values to gimbal via Bluetooth
-        // Implementation would send these via the BluetoothManager
+        appModel.setPitchPID(p: pitchP, i: pitchI, d: pitchD)
+        appModel.setRollPID(p: rollP, i: rollI, d: rollD)
+        appModel.setYawPID(p: yawP, i: yawI, d: yawD)
+        appModel.saveSettings()
         hasUnsavedChanges = false
     }
     
     private func resetToDefaults() {
+        // Send restore defaults command to ESP32
+        appModel.restoreDefaults()
+        
+        // Update local values to match defaults
         pitchP = 1.2
         pitchI = 0.1
         pitchD = 0.05
