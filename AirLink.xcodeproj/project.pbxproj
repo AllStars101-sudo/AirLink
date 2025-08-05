@@ -407,6 +407,7 @@
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "AirLink needs to access your microphone for capturing videos.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "AirLink requires access to your Photo Library to save captured photos and videos.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "AirLink requires access to your Photo Library to save captured photos and videos.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "AirLink uses speech recognition to process voice commands for Aerial, allowing hands-free control of your AirFrame.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -446,6 +447,7 @@
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "AirLink needs to access your microphone for capturing videos.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "AirLink requires access to your Photo Library to save captured photos and videos.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "AirLink requires access to your Photo Library to save captured photos and videos.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "AirLink uses speech recognition to process voice commands for Aerial, allowing hands-free control of your AirFrame.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

@@ -11,6 +11,7 @@ struct SettingsView: View {
     @Environment(AirFrameModel.self) private var appModel
     @State private var showingAbout = false
     @State private var showingPIDTuning = false
+    @State private var showingAPISettings = false
     
     var body: some View {
         NavigationStack {
@@ -138,6 +139,38 @@ struct SettingsView: View {
                     }
                 }
                 
+                // AI Section
+                Section {
+                    Button {
+                        showingAPISettings = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "brain.head.profile")
+                                .foregroundStyle(.purple)
+                                .frame(width: 24)
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Aerial AI Settings")
+                                    .foregroundStyle(.primary)
+                                
+                                Text(APIKeyManager.shared.isFullyConfigured ? "Full AI Mode" : "Demo Mode")
+                                    .font(.caption)
+                                    .foregroundStyle(APIKeyManager.shared.isFullyConfigured ? .green : .orange)
+                            }
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .foregroundStyle(.secondary)
+                                .font(.caption)
+                        }
+                    }
+                } header: {
+                    Text("Artificial Intelligence")
+                } footer: {
+                    Text("Configure API keys to enable full AI functionality including voice commands, scene analysis, and intelligent gimbal control.")
+                }
+                
                 // App Section
                 Section {
                     Button {
@@ -213,6 +246,10 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showingPIDTuning) {
             PIDTuningView()
+                .presentationDetents([.large])
+        }
+        .sheet(isPresented: $showingAPISettings) {
+            APIKeySettingsView()
                 .presentationDetents([.large])
         }
     }

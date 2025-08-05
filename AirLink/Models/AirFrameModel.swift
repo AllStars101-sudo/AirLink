@@ -34,10 +34,21 @@ class AirFrameModel: NSObject {
     // MARK: - BLE Manager
     private var bluetoothManager: BluetoothManager?
     
+    // MARK: - AI Service
+    var aerialService: AerialAIService?
+    
+    var aerial: AerialAIService {
+        if aerialService == nil {
+            aerialService = AerialAIService(airFrameModel: self)
+        }
+        return aerialService!
+    }
+    
     override init() {
         super.init()
         loadUserDefaults()
         setupBluetoothManager()
+        setupAerialService()
     }
     
     // MARK: - Public Methods
@@ -102,6 +113,10 @@ class AirFrameModel: NSObject {
     private func setupBluetoothManager() {
         bluetoothManager = BluetoothManager()
         bluetoothManager?.delegate = self
+    }
+    
+    private func setupAerialService() {
+        // Initialize the aerial service - it will be created lazily when first accessed
     }
     
     private func loadUserDefaults() {
@@ -193,5 +208,6 @@ enum Tab: String, CaseIterable {
     case control = "Control"
     case status = "Status"
     case camera = "Camera"
+    case aerial = "Aerial"
     case settings = "Settings"
 }

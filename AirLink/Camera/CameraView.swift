@@ -95,6 +95,9 @@ struct CameraView: View {
                         
                         Spacer()
                         
+                        // Aerial AI Button
+                        AerialVoiceButton()
+                        
                         CloseButton()
                     }
                     .padding(.horizontal)

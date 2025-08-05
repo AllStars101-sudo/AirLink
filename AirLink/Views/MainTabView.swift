@@ -34,6 +34,13 @@ struct MainTabView: View {
                 }
                 .tag(Tab.camera)
             
+            AerialView()
+                .tabItem {
+                    Image(systemName: "brain.head.profile")
+                    Text("Aerial")
+                }
+                .tag(Tab.aerial)
+            
             SettingsView()
                 .tabItem {
                     Image(systemName: "gearshape.fill")
