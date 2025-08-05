@@ -27,6 +27,7 @@ class AirFrameModel: NSObject {
     
     // MARK: - Settings
     var hasCompletedOnboarding = false
+    var hasCompletedAerialOnboarding = false
     
     // MARK: - UI State
     var selectedTab: Tab = .control
@@ -109,6 +110,16 @@ class AirFrameModel: NSObject {
         saveUserDefaults()
     }
     
+    func completeAerialOnboarding() {
+        hasCompletedAerialOnboarding = true
+        saveUserDefaults()
+    }
+    
+    func resetAerialOnboarding() {
+        hasCompletedAerialOnboarding = false
+        saveUserDefaults()
+    }
+    
     // MARK: - Private Methods
     private func setupBluetoothManager() {
         bluetoothManager = BluetoothManager()
@@ -121,10 +132,12 @@ class AirFrameModel: NSObject {
     
     private func loadUserDefaults() {
         hasCompletedOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
+        hasCompletedAerialOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedAerialOnboarding")
     }
     
     private func saveUserDefaults() {
         UserDefaults.standard.set(hasCompletedOnboarding, forKey: "hasCompletedOnboarding")
+        UserDefaults.standard.set(hasCompletedAerialOnboarding, forKey: "hasCompletedAerialOnboarding")
     }
 }
 

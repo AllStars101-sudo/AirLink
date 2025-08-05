@@ -403,8 +403,9 @@
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "AirLink needs access to Bluetooth to connect to a nearby AirFrame or other Aither products.";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "AirLink needs access to Bluetooth to connect to a nearby AirFrame or other Aither products.";
 				INFOPLIST_KEY_NSBluetoothWhileInUseUsageDescription = "AirLink needs access to Bluetooth to connect to a nearby AirFrame or other Aither products.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "AirLink needs access to your camera to capture photos, videos and to let Aerial see your environment.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "AirLink needs access to your Local Network to find and connect to AirFrame or other Aither products.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "AirLink needs to access your microphone for capturing videos.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "AirLink needs to access your microphone for capturing videos and talking to Aerial.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "AirLink requires access to your Photo Library to save captured photos and videos.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "AirLink requires access to your Photo Library to save captured photos and videos.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "AirLink uses speech recognition to process voice commands for Aerial, allowing hands-free control of your AirFrame.";
@@ -443,8 +444,9 @@
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "AirLink needs access to Bluetooth to connect to a nearby AirFrame or other Aither products.";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "AirLink needs access to Bluetooth to connect to a nearby AirFrame or other Aither products.";
 				INFOPLIST_KEY_NSBluetoothWhileInUseUsageDescription = "AirLink needs access to Bluetooth to connect to a nearby AirFrame or other Aither products.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "AirLink needs access to your camera to capture photos, videos and to let Aerial see your environment.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "AirLink needs access to your Local Network to find and connect to AirFrame or other Aither products.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "AirLink needs to access your microphone for capturing videos.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "AirLink needs to access your microphone for capturing videos and talking to Aerial.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "AirLink requires access to your Photo Library to save captured photos and videos.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "AirLink requires access to your Photo Library to save captured photos and videos.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "AirLink uses speech recognition to process voice commands for Aerial, allowing hands-free control of your AirFrame.";

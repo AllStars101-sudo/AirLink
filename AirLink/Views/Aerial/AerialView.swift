@@ -6,6 +6,30 @@ struct AerialView: View {
     @State private var isKeyboardVisible = false
     
     var body: some View {
+        ZStack {
+            if !airFrameModel.hasCompletedAerialOnboarding {
+                AerialOnboardingView()
+                    .transition(.asymmetric(
+                        insertion: .identity,
+                        removal: .scale(scale: 0.9).combined(with: .opacity)
+                    ))
+            } else {
+                aerialChatView
+                    .transition(.asymmetric(
+                        insertion: .scale(scale: 0.9).combined(with: .opacity),
+                        removal: .identity
+                    ))
+            }
+        }
+        .animation(.smooth(duration: 1.0, extraBounce: 0.1), value: airFrameModel.hasCompletedAerialOnboarding)
+        .onAppear {
+            print("🔍 AerialView Debug:")
+            print("  hasCompletedAerialOnboarding: \(airFrameModel.hasCompletedAerialOnboarding)")
+            print("  Should show onboarding: \(!airFrameModel.hasCompletedAerialOnboarding)")
+        }
+    }
+    
+    private var aerialChatView: some View {
         NavigationStack {
             VStack(spacing: 0) {
                 // Chat Messages
@@ -102,6 +126,15 @@ struct AerialView: View {
             .navigationTitle("Aerial")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        airFrameModel.resetAerialOnboarding()
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
+                    }
+                    .help("Reset Aerial Onboarding")
+                }
+                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         // Show help or settings
