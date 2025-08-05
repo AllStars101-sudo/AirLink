@@ -58,7 +58,7 @@ class AerialAIService {
         let hasAnyAIKey = APIKeyManager.shared.hasAnyAIKey
         let provider = preferredProvider
         let mode = hasAnyAIKey ? "Full AI Mode" : "Demo Mode"
-        let providerName = provider == .openAI ? "OpenAI GPT-OSS-120B" : provider == .claude ? "Claude 3 Haiku" : "Demo"
+        let providerName = provider == .openAI ? "OpenAI GPT-OSS-120B" : provider == .claude ? "Claude 4 Sonnet" : "Demo"
         
         // Initialize with welcome message if no conversations exist
         if conversationHistory.conversations.isEmpty || 
@@ -324,7 +324,7 @@ class AerialAIService {
         let hasAnyAIKey = APIKeyManager.shared.hasAnyAIKey
         let provider = preferredProvider
         let mode = hasAnyAIKey ? "Full AI Mode" : "Demo Mode"
-        let providerName = provider == .openAI ? "OpenAI GPT-OSS-120B" : provider == .claude ? "Claude 3 Haiku" : "Demo"
+        let providerName = provider == .openAI ? "OpenAI GPT-OSS-120B" : provider == .claude ? "Claude 4 Sonnet" : "Demo"
         
         let welcomeMessage = ChatMessage(
             id: UUID(),

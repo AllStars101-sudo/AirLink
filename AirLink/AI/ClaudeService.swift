@@ -36,7 +36,7 @@ class ClaudeService {
         print("History: \(conversationHistory.count) messages")
         
         let request = ClaudeRequest(
-            model: "claude-3-haiku-20240307",
+            model: "claude-sonnet-4-20250514",
             maxTokens: 1024,
             messages: buildMessages(from: conversationHistory, newContent: content),
             tools: tools.map { $0.toClaudeFormat() }
@@ -133,7 +133,7 @@ class ClaudeService {
         
         // Send tool result back to Claude for final response
         let followUpRequest = ClaudeRequest(
-            model: "claude-3-haiku-20240307",
+            model: "claude-sonnet-4-20250514",
             maxTokens: 1024,
             messages: [
                 ClaudeMessage(role: "user", content: "Tool execution result: \(toolResult)")
