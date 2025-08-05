@@ -16,7 +16,7 @@ class AirFrameModel: NSObject {
     var isConnected = false
     var isConnecting = false
     var connectionError: String?
-    var deviceName = "AirOS Gimbal"
+    var deviceName = "AirFrame"
     
     // MARK: - Gimbal State
     var currentPitch: Float = 0.0
