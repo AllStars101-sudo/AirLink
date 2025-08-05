@@ -4,6 +4,9 @@ struct AerialView: View {
     @Environment(AirFrameModel.self) private var airFrameModel
     @State private var messageText = ""
     @State private var isKeyboardVisible = false
+    @State private var showingAboutAerial = false
+    @State private var animationPhase: CGFloat = 0
+    @FocusState private var isTextFieldFocused: Bool
     
     var body: some View {
         ZStack {
@@ -31,9 +34,14 @@ struct AerialView: View {
     
     private var aerialChatView: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                // Chat Messages
-                ScrollViewReader { proxy in
+            ZStack {
+                // Animated Background
+                AnimatedBackgroundView(animationPhase: $animationPhase)
+                    .ignoresSafeArea()
+                
+                VStack(spacing: 0) {
+                    // Chat Messages
+                    ScrollViewReader { proxy in
                     ScrollView {
                         LazyVStack(alignment: .leading, spacing: 12) {
                             ForEach(airFrameModel.aerial.messages) { message in
@@ -52,6 +60,7 @@ struct AerialView: View {
                         .padding(.horizontal)
                         .padding(.top)
                     }
+                    .background(.clear)
                     .onChange(of: airFrameModel.aerial.messages.count) { _, _ in
                         withAnimation(.easeOut(duration: 0.3)) {
                             proxy.scrollTo(airFrameModel.aerial.messages.last?.id, anchor: .bottom)
@@ -59,52 +68,74 @@ struct AerialView: View {
                     }
                 }
                 
-                Divider()
-                
-                // Input Area
-                VStack(spacing: 8) {
-                    HStack(spacing: 12) {
-                        // Voice Input Button
-                        Button {
-                            Task {
-                                if airFrameModel.aerial.isListening {
-                                    airFrameModel.aerial.stopListening()
-                                } else {
-                                    await airFrameModel.aerial.startListening()
+                    // Input Area - iMessage Style with Liquid Glass
+                    VStack(spacing: 8) {
+                        HStack(spacing: 12) {
+                            // Voice Input Button - iMessage Style
+                            Button {
+                                Task {
+                                    if airFrameModel.aerial.isListening {
+                                        airFrameModel.aerial.stopListening()
+                                    } else {
+                                        await airFrameModel.aerial.startListening()
+                                    }
                                 }
+                            } label: {
+                                Image(systemName: airFrameModel.aerial.isListening ? "stop.fill" : "mic.fill")
+                                    .font(.system(size: 18, weight: .medium))
+                                    .foregroundStyle(airFrameModel.aerial.isListening ? .white : .white)
                             }
-                        } label: {
-                            Image(systemName: airFrameModel.aerial.isListening ? "stop.circle.fill" : "mic.circle.fill")
-                                .font(.title2)
-                                .foregroundStyle(airFrameModel.aerial.isListening ? .red : .blue)
-                        }
-                        .disabled(airFrameModel.aerial.isProcessingVoice)
-                        .accessibilityLabel(airFrameModel.aerial.isListening ? "Stop listening" : "Start voice input")
-                        
-                        // Text Input
-                        HStack {
-                            TextField("Ask Aerial anything about your AirFrame...", text: $messageText, axis: .vertical)
-                                .textFieldStyle(.plain)
-                                .lineLimit(1...4)
-                                .onSubmit {
-                                    sendMessage()
-                                }
+                            .frame(width: 36, height: 36)
+                            .background(
+                                Circle()
+                                    .fill(airFrameModel.aerial.isListening ? .red : .blue)
+                                    .shadow(color: airFrameModel.aerial.isListening ? .red.opacity(0.3) : .blue.opacity(0.3), radius: 8, x: 0, y: 4)
+                            )
+                            .scaleEffect(airFrameModel.aerial.isListening ? 1.1 : 1.0)
+                            .animation(.spring(duration: 0.3), value: airFrameModel.aerial.isListening)
+                            .disabled(airFrameModel.aerial.isProcessingVoice)
+                            .accessibilityLabel(airFrameModel.aerial.isListening ? "Stop listening" : "Start voice input")
                             
-                            if !messageText.isEmpty {
-                                Button {
-                                    sendMessage()
-                                } label: {
-                                    Image(systemName: "arrow.up.circle.fill")
-                                        .font(.title2)
-                                        .foregroundStyle(.blue)
+                            // Text Input - Floating Style
+                            HStack(spacing: 8) {
+                                TextField("Ask Aerial anything...", text: $messageText, axis: .vertical)
+                                    .textFieldStyle(.plain)
+                                    .lineLimit(1...4)
+                                    .font(.system(size: 16))
+                                    .focused($isTextFieldFocused)
+                                    .onSubmit {
+                                        sendMessage()
+                                        dismissKeyboard()
+                                    }
+                                
+                                if !messageText.isEmpty {
+                                    Button {
+                                        sendMessage()
+                                        dismissKeyboard()
+                                    } label: {
+                                        Image(systemName: "arrow.up")
+                                            .font(.system(size: 16, weight: .semibold))
+                                            .foregroundStyle(.white)
+                                    }
+                                    .frame(width: 28, height: 28)
+                                    .background(
+                                        Circle()
+                                            .fill(.blue)
+                                            .shadow(color: .blue.opacity(0.4), radius: 6, x: 0, y: 3)
+                                    )
+                                    .disabled(airFrameModel.aerial.isLoading)
+                                    .transition(.scale.combined(with: .opacity))
                                 }
-                                .disabled(airFrameModel.aerial.isLoading)
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .background {
+                                Capsule()
+                                    .fill(.ultraThinMaterial)
+                                    .stroke(.white.opacity(0.2), lineWidth: 1)
+                                    .shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: 6)
                             }
                         }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(.regularMaterial, in: Capsule())
-                    }
                     
                     // Voice Transcription Display
                     if airFrameModel.aerial.isListening && !airFrameModel.aerial.currentTranscription.isEmpty {
@@ -119,9 +150,10 @@ struct AerialView: View {
                         .padding(.horizontal)
                         .transition(.opacity.combined(with: .slide))
                     }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
                 }
-                .padding()
-                .background(.regularMaterial)
             }
             .navigationTitle("Aerial")
             .navigationBarTitleDisplayMode(.inline)
@@ -137,15 +169,25 @@ struct AerialView: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        // Show help or settings
+                        showingAboutAerial = true
                     } label: {
                         Image(systemName: "questionmark.circle")
                     }
+                    .help("About Aerial")
                 }
             }
         }
         .animation(.easeInOut, value: airFrameModel.aerial.isListening)
         .animation(.easeInOut, value: airFrameModel.aerial.currentTranscription)
+        .onAppear {
+            startBackgroundAnimation()
+        }
+        .onTapGesture {
+            dismissKeyboard()
+        }
+        .sheet(isPresented: $showingAboutAerial) {
+            AboutAerialView()
+        }
     }
     
     private func sendMessage() {
@@ -157,6 +199,19 @@ struct AerialView: View {
         Task {
             await airFrameModel.aerial.sendMessage(message)
         }
+    }
+    
+    // Background animation function
+    private func startBackgroundAnimation() {
+        withAnimation(.linear(duration: 15).repeatForever(autoreverses: false)) {
+            animationPhase = 2 * .pi
+        }
+    }
+    
+    // Keyboard dismissal function
+    private func dismissKeyboard() {
+        isTextFieldFocused = false
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 
@@ -266,6 +321,161 @@ private struct ErrorBubbleView: View {
                     .background(.red.opacity(0.1), in: RoundedRectangle(cornerRadius: 18))
             }
             Spacer()
+        }
+    }
+}
+
+// MARK: - Animated Background
+private struct AnimatedBackgroundView: View {
+    @Binding var animationPhase: CGFloat
+    
+    var body: some View {
+        // Clean gradient background with more visible animation
+        LinearGradient(
+            colors: [
+                Color(.systemBackground),
+                Color.blue.opacity(0.12),
+                Color.purple.opacity(0.08),
+                Color(.systemBackground)
+            ],
+            startPoint: UnitPoint(
+                x: 0.5 + 0.3 * cos(animationPhase * 0.3),
+                y: 0.5 + 0.3 * sin(animationPhase * 0.2)
+            ),
+            endPoint: UnitPoint(
+                x: 0.5 - 0.3 * cos(animationPhase * 0.3),
+                y: 0.5 - 0.3 * sin(animationPhase * 0.2)
+            )
+        )
+    }
+}
+
+// MARK: - About Aerial View
+private struct AboutAerialView: View {
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 24) {
+                    // App Icon and Title
+                    VStack(spacing: 16) {
+                        Image(systemName: "apple.intelligence")
+                            .font(.system(size: 80))
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [.blue, .purple],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                        
+                        Text("Aerial")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .foregroundStyle(.primary)
+                        
+                        Text("Your AI Assistant")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.top, 40)
+                    
+                    // Description
+                    VStack(spacing: 16) {
+                        Text("Intelligent AirFrame Control")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.primary)
+                        
+                        Text("Aerial is your intelligent AI assistant for the AirFrame gimbal system. Using advanced natural language processing and computer vision, Aerial understands your creative needs and helps you achieve the perfect shot.")
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                            .lineSpacing(4)
+                    }
+                    .padding(.horizontal)
+                    
+                    // Features
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Capabilities")
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.primary)
+                        
+                        AerialFeatureRow(
+                            iconName: "mic.fill",
+                            title: "Voice Commands",
+                            description: "Natural language control of your gimbal"
+                        )
+                        
+                        AerialFeatureRow(
+                            iconName: "camera.viewfinder",
+                            title: "Scene Analysis",
+                            description: "AI-powered scene understanding and tracking"
+                        )
+                        
+                        AerialFeatureRow(
+                            iconName: "brain.head.profile",
+                            title: "Smart Suggestions",
+                            description: "Intelligent recommendations for better shots"
+                        )
+                        
+                        AerialFeatureRow(
+                            iconName: "waveform.path.ecg",
+                            title: "Adaptive Learning",
+                            description: "Learns your preferences and shooting style"
+                        )
+                    }
+                    .padding(.horizontal)
+                    
+                    Spacer(minLength: 40)
+                }
+            }
+            .background(
+                LinearGradient(
+                    colors: [Color(uiColor: .systemBackground), Color.blue.opacity(0.2)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
+            )
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                    .foregroundStyle(.blue)
+                }
+            }
+        }
+    }
+}
+
+private struct AerialFeatureRow: View {
+    let iconName: String
+    let title: String
+    let description: String
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 16) {
+            Image(systemName: iconName)
+                .font(.title2)
+                .foregroundStyle(.blue)
+                .frame(width: 24)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.primary)
+                
+                Text(description)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(nil)
+            }
         }
     }
 }
