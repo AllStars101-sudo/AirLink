@@ -27,6 +27,13 @@ struct MainTabView: View {
                 }
                 .tag(Tab.status)
             
+            CameraView()
+                .tabItem {
+                    Image(systemName: "camera")
+                    Text("Camera")
+                }
+                .tag(Tab.camera)
+            
             SettingsView()
                 .tabItem {
                     Image(systemName: "gearshape.fill")
@@ -41,6 +48,7 @@ struct MainTabView: View {
 private enum Tab: String, CaseIterable {
     case control = "Control"
     case status = "Status"
+    case camera = "Camera"
     case settings = "Settings"
 }
 

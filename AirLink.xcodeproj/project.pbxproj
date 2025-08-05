@@ -400,6 +400,13 @@
 				DEVELOPMENT_TEAM = N5MYGB677W;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "AirLink needs access to Bluetooth to connect to a nearby AirFrame or other Aither products.";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "AirLink needs access to Bluetooth to connect to a nearby AirFrame or other Aither products.";
+				INFOPLIST_KEY_NSBluetoothWhileInUseUsageDescription = "AirLink needs access to Bluetooth to connect to a nearby AirFrame or other Aither products.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "AirLink needs access to your Local Network to find and connect to AirFrame or other Aither products.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "AirLink needs to access your microphone for capturing videos.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "AirLink requires access to your Photo Library to save captured photos and videos.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "AirLink requires access to your Photo Library to save captured photos and videos.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -432,6 +439,13 @@
 				DEVELOPMENT_TEAM = N5MYGB677W;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "AirLink needs access to Bluetooth to connect to a nearby AirFrame or other Aither products.";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "AirLink needs access to Bluetooth to connect to a nearby AirFrame or other Aither products.";
+				INFOPLIST_KEY_NSBluetoothWhileInUseUsageDescription = "AirLink needs access to Bluetooth to connect to a nearby AirFrame or other Aither products.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "AirLink needs access to your Local Network to find and connect to AirFrame or other Aither products.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "AirLink needs to access your microphone for capturing videos.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "AirLink requires access to your Photo Library to save captured photos and videos.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "AirLink requires access to your Photo Library to save captured photos and videos.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
