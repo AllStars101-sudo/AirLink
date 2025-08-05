@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreBluetooth
+import Combine
 
 protocol BluetoothManagerDelegate: AnyObject {
     func bluetoothManagerDidUpdateState(_ state: CBManagerState)
@@ -19,6 +20,8 @@ protocol BluetoothManagerDelegate: AnyObject {
 @MainActor
 class BluetoothManager: NSObject {
     weak var delegate: BluetoothManagerDelegate?
+    
+    @Published private(set) var isConnected: Bool = false
     
     private var centralManager: CBCentralManager!
     private var gimbalPeripheral: CBPeripheral?
@@ -149,16 +152,19 @@ extension BluetoothManager: CBCentralManagerDelegate {
     }
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        isConnected = true
         peripheral.discoverServices([serviceUUID])
         delegate?.bluetoothManagerDidConnect()
     }
     
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+        isConnected = false
         gimbalPeripheral = nil
         delegate?.bluetoothManagerDidDisconnect(error: error)
     }
     
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
+        isConnected = false
         delegate?.bluetoothManagerDidDisconnect(error: error)
     }
 }
