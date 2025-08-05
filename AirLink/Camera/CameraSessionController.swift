@@ -20,6 +20,9 @@ final class CameraSessionController: NSObject, ObservableObject {
     @Published var isFrontCamera: Bool = false
     @Published var isTrackingEnabled: Bool = true
     @Published var lastCapturedPhoto: UIImage?
+    @Published var lastCapturedVideoThumbnail: UIImage?
+    @Published var videoThumbnails: [UIImage] = []
+
     
     // Private
     private let session = AVCaptureSession()
@@ -36,7 +39,6 @@ final class CameraSessionController: NSObject, ObservableObject {
         self.trackerLogic = trackerLogic
         super.init()
         configureSession()
-        photoOutput.isHighResolutionCaptureEnabled = true
     }
     
     func start() {
@@ -63,6 +65,13 @@ final class CameraSessionController: NSObject, ObservableObject {
               session.canAddInput(input)
         else { return }
         session.addInput(input)
+        
+        // Audio Input
+        if let audioDevice = AVCaptureDevice.default(for: .audio),
+           let audioInput = try? AVCaptureDeviceInput(device: audioDevice),
+           session.canAddInput(audioInput) {
+            session.addInput(audioInput)
+        }
         
         // Output
         videoOutput.setSampleBufferDelegate(self, queue: visionQueue)
@@ -203,5 +212,20 @@ extension CameraSessionController: AVCaptureFileOutputRecordingDelegate {
                 PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: outputFileURL)
             })
         }
+        
+        let asset = AVURLAsset(url: outputFileURL)
+        let imageGenerator = AVAssetImageGenerator(asset: asset)
+        imageGenerator.appliesPreferredTrackTransform = true
+        let time = CMTime(seconds: 0.0, preferredTimescale: 600)
+        imageGenerator.generateCGImageAsynchronously(for: time) { cgImage, actualTime, error in
+            if let cgImage, error == nil {
+                let uiImage = UIImage(cgImage: cgImage)
+                Task { @MainActor in
+                    self.lastCapturedVideoThumbnail = uiImage
+                    self.videoThumbnails.append(uiImage)
+                }
+            }
+        }
     }
 }
+

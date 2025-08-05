@@ -6,6 +6,18 @@
 //
 
 import SwiftUI
+import CoreHaptics
+
+private struct HapticManager {
+    static func impact(_ style: UIImpactFeedbackGenerator.FeedbackStyle) {
+        let generator = UIImpactFeedbackGenerator(style: style)
+        generator.impactOccurred()
+    }
+    static func notification(_ type: UINotificationFeedbackGenerator.FeedbackType) {
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(type)
+    }
+}
 
 struct ControlView: View {
     @Environment(AirFrameModel.self) private var appModel
@@ -113,6 +125,7 @@ private struct ConnectionStatusCard: View {
                         .foregroundStyle(.secondary)
                     Spacer()
                 }
+                .onAppear { HapticManager.notification(.error) }
             }
         }
         .padding(20)
@@ -233,6 +246,7 @@ private struct ModeSelectionCard: View {
                 ForEach(GimbalMode.allCases.filter { $0 != .inactive }, id: \.self) { mode in
                     ModeButton(mode: mode, isSelected: appModel.currentMode == mode) {
                         appModel.setGimbalMode(mode)
+                        HapticManager.impact(.medium)
                     }
                 }
             }
@@ -315,7 +329,10 @@ private struct QuickActionButton: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        Button {
+            action()
+            HapticManager.impact(.light)
+        } label: {
             VStack(spacing: 8) {
                 Image(systemName: iconName)
                     .font(.title2)
@@ -345,6 +362,7 @@ private struct ConnectionButton: View {
     var body: some View {
         Button {
             showingConnectionSheet = true
+            HapticManager.impact(.medium)
         } label: {
             Image(systemName: appModel.isConnected ? "wifi" : "wifi.slash")
                 .foregroundStyle(appModel.isConnected ? .green : .red)

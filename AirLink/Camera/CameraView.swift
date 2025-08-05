@@ -2,6 +2,22 @@
 
 import SwiftUI
 import AVFoundation
+import UIKit
+
+private struct Haptics {
+    static func impact(style: UIImpactFeedbackGenerator.FeedbackStyle = .light) {
+        let generator = UIImpactFeedbackGenerator(style: style)
+        generator.impactOccurred()
+    }
+    static func notification(_ type: UINotificationFeedbackGenerator.FeedbackType) {
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(type)
+    }
+    static func selection() {
+        let generator = UISelectionFeedbackGenerator()
+        generator.selectionChanged()
+    }
+}
 
 enum CameraMode { case photo, video }
 
@@ -65,6 +81,7 @@ struct CameraView: View {
                     HStack {
                         Button {
                             cameraController.switchCamera()
+                            Haptics.impact()
                         } label: {
                             Image(systemName: "arrow.triangle.2.circlepath.camera")
                                 .resizable()
@@ -90,6 +107,7 @@ struct CameraView: View {
                         HStack(spacing: 0) {
                             Button {
                                 cameraMode = .video
+                                Haptics.selection()
                             } label: {
                                 Text("VIDEO")
                                     .font(.headline)
@@ -102,6 +120,7 @@ struct CameraView: View {
                             
                             Button {
                                 cameraMode = .photo
+                                Haptics.selection()
                             } label: {
                                 Text("PHOTO")
                                     .font(.headline)
@@ -122,6 +141,7 @@ struct CameraView: View {
                             // Tracking toggle button
                             Button {
                                 cameraController.isTrackingEnabled.toggle()
+                                Haptics.impact()
                             } label: {
                                 Image(systemName: "person.and.background.dotted")
                                     .resizable()
@@ -141,6 +161,7 @@ struct CameraView: View {
                                 if cameraMode == .photo {
                                     Button {
                                         cameraController.capturePhoto()
+                                        Haptics.impact(style: .medium)
                                     } label: {
                                         Circle()
                                             .fill(Color.white)
@@ -155,6 +176,7 @@ struct CameraView: View {
                                     if cameraController.isRecording {
                                         Button {
                                             cameraController.stopRecording()
+                                            Haptics.notification(.warning)
                                         } label: {
                                             Image(systemName: "stop.circle.fill")
                                                 .resizable()
@@ -165,6 +187,7 @@ struct CameraView: View {
                                     } else {
                                         Button {
                                             cameraController.startRecording()
+                                            Haptics.notification(.success)
                                         } label: {
                                             Image(systemName: "record.circle.fill")
                                                 .resizable()
@@ -178,17 +201,31 @@ struct CameraView: View {
                             
                             Spacer()
                             
-                            // Thumbnail of last captured photo if available
-                            if let lastPhoto = cameraController.lastCapturedPhoto {
-                                Image(uiImage: lastPhoto)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 44, height: 44)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                                    .shadow(radius: 2)
-                                    .accessibilityLabel(Text("Last captured photo"))
+                            // Thumbnail of last captured photo or video thumbnail if available
+                            if cameraMode == .photo {
+                                if let lastPhoto = cameraController.lastCapturedPhoto {
+                                    Image(uiImage: lastPhoto)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 44, height: 44)
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                        .shadow(radius: 2)
+                                        .accessibilityLabel(Text("Last captured photo"))
+                                } else {
+                                    Color.clear.frame(width: 44, height: 44)
+                                }
                             } else {
-                                Color.clear.frame(width: 44, height: 44)
+                                if let lastVideoThumb = cameraController.lastCapturedVideoThumbnail {
+                                    Image(uiImage: lastVideoThumb)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 44, height: 44)
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                        .shadow(radius: 2)
+                                        .accessibilityLabel(Text("Last captured video thumbnail"))
+                                } else {
+                                    Color.clear.frame(width: 44, height: 44)
+                                }
                             }
                         }
                         .padding(.horizontal)
@@ -209,7 +246,7 @@ struct CameraView: View {
         .onAppear { cameraController.start() }
         .onDisappear { cameraController.stop() }
         // Observe lastCapturedPhoto changes to trigger flash
-        .onChange(of: cameraController.lastCapturedPhoto) { _ in
+        .onChange(of: cameraController.lastCapturedPhoto) { _, _ in
             withAnimation(.easeOut(duration: 0.2)) {
                 flashOpacity = 0.5
             }
