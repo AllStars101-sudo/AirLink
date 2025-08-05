@@ -5,8 +5,19 @@ struct AerialView: View {
     @State private var messageText = ""
     @State private var isKeyboardVisible = false
     @State private var showingAboutAerial = false
+    @State private var showingConversationHistory = false
     @State private var animationPhase: CGFloat = 0
     @FocusState private var isTextFieldFocused: Bool
+    
+    private var conversationTitle: String {
+        if let currentConversation = airFrameModel.aerial.conversationHistory.currentConversation {
+            if currentConversation.title == "New Conversation" || currentConversation.title.isEmpty {
+                return "Aerial"
+            }
+            return currentConversation.title
+        }
+        return "Aerial"
+    }
     
     var body: some View {
         ZStack {
@@ -155,25 +166,49 @@ struct AerialView: View {
                     .padding(.vertical, 12)
                 }
             }
-            .navigationTitle("Aerial")
+            .navigationTitle(conversationTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
-                        airFrameModel.resetAerialOnboarding()
+                        showingConversationHistory = true
                     } label: {
-                        Image(systemName: "arrow.clockwise")
+                        Image(systemName: "clock.arrow.circlepath")
                     }
-                    .help("Reset Aerial Onboarding")
+                    .help("Conversation History")
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showingAboutAerial = true
+                    Menu {
+                        Button {
+                            airFrameModel.aerial.createNewConversation()
+                        } label: {
+                            Label("New Conversation", systemImage: "plus.message")
+                        }
+                        
+                        Button {
+                            showingConversationHistory = true
+                        } label: {
+                            Label("View History", systemImage: "clock.arrow.circlepath")
+                        }
+                        
+                        Divider()
+                        
+                        Button {
+                            showingAboutAerial = true
+                        } label: {
+                            Label("About Aerial", systemImage: "questionmark.circle")
+                        }
+                        
+                        Button {
+                            airFrameModel.resetAerialOnboarding()
+                        } label: {
+                            Label("Reset Onboarding", systemImage: "arrow.clockwise")
+                        }
                     } label: {
-                        Image(systemName: "questionmark.circle")
+                        Image(systemName: "ellipsis.circle")
                     }
-                    .help("About Aerial")
+                    .help("Aerial Options")
                 }
             }
         }
@@ -187,6 +222,9 @@ struct AerialView: View {
         }
         .sheet(isPresented: $showingAboutAerial) {
             AboutAerialView()
+        }
+        .sheet(isPresented: $showingConversationHistory) {
+            ConversationHistoryView()
         }
     }
     
