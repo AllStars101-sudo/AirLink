@@ -40,6 +40,11 @@ final class TrackerLogic: ObservableObject {
     }
     
     // MARK: - Public API
+    func startTracking() {
+        // Send initial zero speeds to prevent AirFrame timeout
+        sendSpeeds(pan: 0, tilt: 0, active: true)
+    }
+    
     func processDetection(_ rect: CGRect, in frame: CGRect) {
         self.detectedPersonRect = rect
 

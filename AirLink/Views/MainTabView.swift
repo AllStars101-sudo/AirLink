@@ -9,10 +9,10 @@ import SwiftUI
 
 struct MainTabView: View {
     @Environment(AirFrameModel.self) private var appModel
-    @State private var selectedTab: Tab = .control
     
     var body: some View {
-        TabView(selection: $selectedTab) {
+        @Bindable var appModel = appModel
+        TabView(selection: $appModel.selectedTab) {
             ControlView()
                 .tabItem {
                     Image(systemName: "scope")
@@ -45,12 +45,6 @@ struct MainTabView: View {
     }
 }
 
-private enum Tab: String, CaseIterable {
-    case control = "Control"
-    case status = "Status"
-    case camera = "Camera"
-    case settings = "Settings"
-}
 
 #Preview {
     MainTabView()

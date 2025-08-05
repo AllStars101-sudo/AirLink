@@ -16,7 +16,7 @@ class AirFrameModel: NSObject {
     var isConnected = false
     var isConnecting = false
     var connectionError: String?
-    var deviceName = "AirOS Gimbal"
+    var deviceName = "AirFrame"
     
     // MARK: - Gimbal State
     var currentPitch: Float = 0.0
@@ -27,6 +27,9 @@ class AirFrameModel: NSObject {
     
     // MARK: - Settings
     var hasCompletedOnboarding = false
+    
+    // MARK: - UI State
+    var selectedTab: Tab = .control
     
     // MARK: - BLE Manager
     private var bluetoothManager: BluetoothManager?
@@ -53,7 +56,13 @@ class AirFrameModel: NSObject {
     }
     
     func setGimbalMode(_ mode: GimbalMode) {
+        currentMode = mode // Update the current mode immediately
         bluetoothManager?.setGimbalMode(mode)
+        
+        // Auto-navigate to Camera tab when Person Tracking is selected
+        if mode == .personTracking {
+            selectedTab = .camera
+        }
     }
     
     func calibrateGimbal() {
@@ -178,4 +187,11 @@ enum GimbalStatus: UInt8 {
     case panFollow = 3
     case fpv = 4
     case personTracking = 5
+}
+
+enum Tab: String, CaseIterable {
+    case control = "Control"
+    case status = "Status"
+    case camera = "Camera"
+    case settings = "Settings"
 }

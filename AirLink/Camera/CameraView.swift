@@ -140,7 +140,18 @@ struct CameraView: View {
                         HStack {
                             // Tracking toggle button
                             Button {
+                                // Check state before toggling to determine what mode to set
+                                let willEnableTracking = !cameraController.isTrackingEnabled
                                 cameraController.isTrackingEnabled.toggle()
+                                
+                                // Send appropriate signal based on new state
+                                if willEnableTracking {
+                                    model.setGimbalMode(.personTracking)
+                                    // Send initial tracking data to prevent AirFrame timeout
+                                    trackerLogic.startTracking()
+                                } else {
+                                    model.setGimbalMode(.locked)
+                                }
                                 Haptics.impact()
                             } label: {
                                 Image(systemName: "person.and.background.dotted")
@@ -243,8 +254,20 @@ struct CameraView: View {
                 .allowsHitTesting(false)
         }
         .animation(.interpolatingSpring(stiffness: 300, damping: 20), value: trackerLogic.detectedPersonRect)
-        .onAppear { cameraController.start() }
+        .onAppear { 
+            cameraController.start()
+            // Sync tracking state with gimbal mode
+            if model.currentMode == .personTracking {
+                cameraController.isTrackingEnabled = true
+            }
+        }
         .onDisappear { cameraController.stop() }
+        // Sync tracking state when gimbal mode changes
+        .onChange(of: model.currentMode) { _, newMode in
+            if newMode == .personTracking {
+                cameraController.isTrackingEnabled = true
+            }
+        }
         // Observe lastCapturedPhoto changes to trigger flash
         .onChange(of: cameraController.lastCapturedPhoto) { _, _ in
             withAnimation(.easeOut(duration: 0.2)) {

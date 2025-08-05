@@ -66,7 +66,7 @@ struct ControlView: View {
                 )
                 .ignoresSafeArea()
             )
-            .navigationTitle("AirFrame Control")
+            .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -153,9 +153,9 @@ private struct ConnectionStatusCard: View {
         if appModel.isConnected {
             return "Ready for control"
         } else if appModel.isConnecting {
-            return "Searching for AirFrame gimbal"
+            return "Searching for AirFrame"
         } else {
-            return "Tap to connect to your gimbal"
+            return "Tap to connect to AirFrame"
         }
     }
 }
