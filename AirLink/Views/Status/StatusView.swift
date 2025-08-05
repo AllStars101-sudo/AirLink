@@ -196,7 +196,7 @@ private struct DetailedStatusCard: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            Text("Gimbal Status")
+            Text("AirFrame Status")
                 .font(.headline)
                 .fontWeight(.semibold)
                 .foregroundStyle(.primary)

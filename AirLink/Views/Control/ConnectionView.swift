@@ -25,7 +25,7 @@ struct ConnectionView: View {
                         .fontWeight(.bold)
                         .foregroundStyle(.primary)
                     
-                    Text("Make sure your AirFrame gimbal is powered on and nearby")
+                    Text("Make sure AirFrame is powered on and nearby")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -104,7 +104,7 @@ struct ConnectionView: View {
                             .fontWeight(.semibold)
                             .foregroundStyle(.primary)
                         
-                        Text("Looking for AirFrame gimbal")
+                        Text("Looking for AirFrame")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }

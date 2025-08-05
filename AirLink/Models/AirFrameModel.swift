@@ -16,7 +16,7 @@ class AirFrameModel: NSObject {
     var isConnected = false
     var isConnecting = false
     var connectionError: String?
-    var deviceName = "AirOS Gimbal"
+    var deviceName = "AirFrame"
     
     // MARK: - Gimbal State
     var currentPitch: Float = 0.0
@@ -27,14 +27,29 @@ class AirFrameModel: NSObject {
     
     // MARK: - Settings
     var hasCompletedOnboarding = false
+    var hasCompletedAerialOnboarding = false
+    
+    // MARK: - UI State
+    var selectedTab: Tab = .control
     
     // MARK: - BLE Manager
     private var bluetoothManager: BluetoothManager?
+    
+    // MARK: - AI Service
+    var aerialService: AerialAIService?
+    
+    var aerial: AerialAIService {
+        if aerialService == nil {
+            aerialService = AerialAIService(airFrameModel: self)
+        }
+        return aerialService!
+    }
     
     override init() {
         super.init()
         loadUserDefaults()
         setupBluetoothManager()
+        setupAerialService()
     }
     
     // MARK: - Public Methods
@@ -53,7 +68,13 @@ class AirFrameModel: NSObject {
     }
     
     func setGimbalMode(_ mode: GimbalMode) {
+        currentMode = mode // Update the current mode immediately
         bluetoothManager?.setGimbalMode(mode)
+        
+        // Auto-navigate to Camera tab when Person Tracking is selected
+        if mode == .personTracking {
+            selectedTab = .camera
+        }
     }
     
     func calibrateGimbal() {
@@ -89,18 +110,34 @@ class AirFrameModel: NSObject {
         saveUserDefaults()
     }
     
+    func completeAerialOnboarding() {
+        hasCompletedAerialOnboarding = true
+        saveUserDefaults()
+    }
+    
+    func resetAerialOnboarding() {
+        hasCompletedAerialOnboarding = false
+        saveUserDefaults()
+    }
+    
     // MARK: - Private Methods
     private func setupBluetoothManager() {
         bluetoothManager = BluetoothManager()
         bluetoothManager?.delegate = self
     }
     
+    private func setupAerialService() {
+        // Initialize the aerial service - it will be created lazily when first accessed
+    }
+    
     private func loadUserDefaults() {
         hasCompletedOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
+        hasCompletedAerialOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedAerialOnboarding")
     }
     
     private func saveUserDefaults() {
         UserDefaults.standard.set(hasCompletedOnboarding, forKey: "hasCompletedOnboarding")
+        UserDefaults.standard.set(hasCompletedAerialOnboarding, forKey: "hasCompletedAerialOnboarding")
     }
 }
 
@@ -178,4 +215,12 @@ enum GimbalStatus: UInt8 {
     case panFollow = 3
     case fpv = 4
     case personTracking = 5
+}
+
+enum Tab: String, CaseIterable {
+    case control = "Control"
+    case status = "Status"
+    case camera = "Camera"
+    case aerial = "Aerial"
+    case settings = "Settings"
 }
