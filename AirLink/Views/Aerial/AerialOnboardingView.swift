@@ -167,7 +167,7 @@ struct AerialOnboardingView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     privacySection(
-                        icon: "brain.head.profile",
+                        icon: "apple.intelligence",
                         title: "AI-Powered Assistant",
                         description: "Aerial uses advanced AI to help you control your AirFrame gimbal and analyze scenes for perfect shots."
                     )
@@ -481,7 +481,7 @@ private struct AerialOnboardingPage {
     
     static let allPages: [AerialOnboardingPage] = [
         AerialOnboardingPage(
-            iconName: "brain.head.profile",
+            iconName: "apple.intelligence",
             title: "Meet Aerial",
             description: "Your intelligent AI assistant for AirFrame. Get personalized help, real-time analysis, and seamless gimbal control through natural conversation.",
             gradientColors: [.blue, .cyan],

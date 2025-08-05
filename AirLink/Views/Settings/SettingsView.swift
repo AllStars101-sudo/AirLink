@@ -145,7 +145,7 @@ struct SettingsView: View {
                         showingAPISettings = true
                     } label: {
                         HStack {
-                            Image(systemName: "brain.head.profile")
+                            Image(systemName: "apple.intelligence")
                                 .foregroundStyle(.purple)
                                 .frame(width: 24)
                             

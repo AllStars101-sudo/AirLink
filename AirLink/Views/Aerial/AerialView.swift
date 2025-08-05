@@ -182,7 +182,7 @@ private struct ChatBubbleView: View {
             } else {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(alignment: .top, spacing: 8) {
-                        Image(systemName: "brain.head.profile")
+                        Image(systemName: "apple.intelligence")
                             .font(.caption)
                             .foregroundStyle(.blue)
                             .padding(6)
@@ -218,7 +218,7 @@ private struct LoadingBubbleView: View {
     var body: some View {
         HStack {
             HStack(alignment: .top, spacing: 8) {
-                Image(systemName: "brain.head.profile")
+                Image(systemName: "apple.intelligence")
                     .font(.caption)
                     .foregroundStyle(.blue)
                     .padding(6)

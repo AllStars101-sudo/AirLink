@@ -33,7 +33,7 @@ struct AerialVoiceButton: View {
                         .foregroundStyle(.green)
                 } else {
                     // Default state
-                    Image(systemName: "brain.head.profile")
+                    Image(systemName: "apple.intelligence")
                         .font(.title2)
                         .foregroundStyle(.blue)
                 }

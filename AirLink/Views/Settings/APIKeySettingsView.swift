@@ -19,7 +19,7 @@ struct APIKeySettingsView: View {
                 
                 Section {
                     HStack {
-                        Image(systemName: "brain.head.profile")
+                        Image(systemName: "apple.intelligence")
                             .foregroundStyle(.blue)
                         Text("Status")
                         Spacer()

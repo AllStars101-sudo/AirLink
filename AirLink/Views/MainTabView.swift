@@ -36,7 +36,7 @@ struct MainTabView: View {
             
             AerialView()
                 .tabItem {
-                    Image(systemName: "brain.head.profile")
+                    Image(systemName: "apple.intelligence")
                     Text("Aerial")
                 }
                 .tag(Tab.aerial)
