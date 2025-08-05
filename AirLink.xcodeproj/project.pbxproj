@@ -400,6 +400,8 @@
 				DEVELOPMENT_TEAM = N5MYGB677W;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "AirLink needs access to Bluetooth to connect to a nearby AirFrame or other Aither products.";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "AirLink needs access to Bluetooth to connect to a nearby AirFrame or other Aither products.";
 				INFOPLIST_KEY_NSBluetoothWhileInUseUsageDescription = "AirLink needs access to Bluetooth to connect to a nearby AirFrame or other Aither products.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "AirLink needs access to your Local Network to find and connect to AirFrame or other Aither products.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "AirLink needs to access your microphone for capturing videos.";
@@ -437,6 +439,8 @@
 				DEVELOPMENT_TEAM = N5MYGB677W;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "AirLink needs access to Bluetooth to connect to a nearby AirFrame or other Aither products.";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "AirLink needs access to Bluetooth to connect to a nearby AirFrame or other Aither products.";
 				INFOPLIST_KEY_NSBluetoothWhileInUseUsageDescription = "AirLink needs access to Bluetooth to connect to a nearby AirFrame or other Aither products.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "AirLink needs access to your Local Network to find and connect to AirFrame or other Aither products.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "AirLink needs to access your microphone for capturing videos.";
