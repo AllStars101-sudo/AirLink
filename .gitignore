@@ -1,2 +1,41 @@
-CLAUDE.md
+## macOS
+.DS_Store
+
+## Xcode
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+*.xcuserstate
+
+# Derived data and build outputs
+DerivedData/
+build/
+
+## Swift Package Manager
+.build/
+
+## Secrets and local config
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.mobileprovision
+Secrets/
+Config/Secrets.xcconfig
+
+# Local API config (do not commit real keys)
+**/APIConfig.plist
+AirLink/AirLink/APIConfig.plist
+
+## Tooling cache
 /.claude
+CLAUDE.md

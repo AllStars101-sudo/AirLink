@@ -38,6 +38,21 @@ struct SettingsView: View {
                             .foregroundStyle(appModel.isConnected ? .green : .red)
                     }
                     
+                    Toggle(isOn: Binding(
+                        get: { appModel.isDemoMode },
+                        set: { isOn in
+                            if isOn { appModel.enableDemoMode() } else { appModel.disableDemoMode() }
+                        }
+                    )) {
+                        HStack {
+                            Image(systemName: "play.rectangle.on.rectangle")
+                                .foregroundStyle(.orange)
+                                .frame(width: 24)
+                            Text("Demo Mode")
+                        }
+                    }
+                    .tint(.orange)
+                    
                     if appModel.isConnected {
                         HStack {
                             Image(systemName: "cpu")
