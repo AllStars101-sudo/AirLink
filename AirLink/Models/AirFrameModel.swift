@@ -18,6 +18,10 @@ class AirFrameModel: NSObject {
     var connectionError: String?
     var deviceName = "AirFrame"
     
+    // MARK: - Demo Mode
+    var isDemoMode: Bool = false
+    private var demoTimer: Timer?
+    
     // MARK: - Gimbal State
     var currentPitch: Float = 0.0
     var currentRoll: Float = 0.0
@@ -54,6 +58,12 @@ class AirFrameModel: NSObject {
     
     // MARK: - Public Methods
     func startScanning() {
+        // In demo mode, immediately simulate a connection
+        if isDemoMode {
+            isConnecting = true
+            enableDemoMode()
+            return
+        }
         bluetoothManager?.startScanning()
         isConnecting = true
     }
@@ -64,12 +74,18 @@ class AirFrameModel: NSObject {
     }
     
     func disconnect() {
+        if isDemoMode {
+            disableDemoMode()
+            return
+        }
         bluetoothManager?.disconnect()
     }
     
     func setGimbalMode(_ mode: GimbalMode) {
         currentMode = mode // Update the current mode immediately
-        bluetoothManager?.setGimbalMode(mode)
+        if !isDemoMode {
+            bluetoothManager?.setGimbalMode(mode)
+        }
         
         // Auto-navigate to Camera tab when Person Tracking is selected
         if mode == .personTracking {
@@ -78,10 +94,23 @@ class AirFrameModel: NSObject {
     }
     
     func calibrateGimbal() {
+        if isDemoMode {
+            isCalibrating = true
+            // Simulate a short calibration routine
+            Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { [weak self] _ in
+                guard let self = self else { return }
+                self.isCalibrating = false
+            }
+            return
+        }
         bluetoothManager?.sendCommand("calibrate")
     }
     
     func resetYaw() {
+        if isDemoMode {
+            currentYaw = 0
+            return
+        }
         bluetoothManager?.sendCommand("reset_yaw")
     }
     
@@ -133,11 +162,65 @@ class AirFrameModel: NSObject {
     private func loadUserDefaults() {
         hasCompletedOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
         hasCompletedAerialOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedAerialOnboarding")
+        isDemoMode = UserDefaults.standard.bool(forKey: "isDemoMode")
+        if isDemoMode {
+            enableDemoMode()
+        }
     }
     
     private func saveUserDefaults() {
         UserDefaults.standard.set(hasCompletedOnboarding, forKey: "hasCompletedOnboarding")
         UserDefaults.standard.set(hasCompletedAerialOnboarding, forKey: "hasCompletedAerialOnboarding")
+        UserDefaults.standard.set(isDemoMode, forKey: "isDemoMode")
+    }
+
+    // MARK: - Demo Mode Helpers
+    func enableDemoMode() {
+        isDemoMode = true
+        UserDefaults.standard.set(true, forKey: "isDemoMode")
+        connectionError = nil
+        deviceName = "AirFrame (Demo)"
+        isConnecting = false
+        isConnected = true
+        startDemoAngles()
+    }
+    
+    func disableDemoMode() {
+        isDemoMode = false
+        UserDefaults.standard.set(false, forKey: "isDemoMode")
+        stopDemoAngles()
+        isConnected = false
+        isConnecting = false
+        connectionError = nil
+        deviceName = "AirFrame"
+        currentPitch = 0
+        currentRoll = 0
+        currentYaw = 0
+        isCalibrating = false
+        currentMode = .locked
+    }
+    
+    private func startDemoAngles() {
+        stopDemoAngles()
+        let startTime = Date()
+        demoTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+            let t = Date().timeIntervalSince(startTime)
+            // Smooth, bounded motion suitable for charts and UI
+            let pitch = Float(10.0 * sin(t * 1.2))
+            let roll  = Float(8.0  * sin(t * 0.9 + 0.7))
+            let yaw   = Float(5.0  * sin(t * 0.6 + 1.1))
+            Task { @MainActor in
+                self.currentPitch = pitch
+                self.currentRoll = roll
+                self.currentYaw = yaw
+            }
+        }
+    }
+    
+    private func stopDemoAngles() {
+        demoTimer?.invalidate()
+        demoTimer = nil
     }
 }
 

@@ -14,7 +14,7 @@ struct AerialOnboardingView: View {
     @State private var showsPrivacyAgreement = false
     @State private var hasAgreedToPrivacy = false
     @State private var showsContinueButton = false
-    @State private var backgroundGradientOffset: CGFloat = 0
+    @State private var animationPhase: CGFloat = 0
     @State private var iconRotation: Double = 0
     @State private var iconScale: CGFloat = 1.0
     
@@ -23,8 +23,8 @@ struct AerialOnboardingView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                // Dynamic Liquid Glass Background with subtle movement
-                liquidGlassBackground
+                // Flowing Animated Background matching main chat view
+                OnboardingAnimatedBackgroundView(animationPhase: $animationPhase)
                     .ignoresSafeArea()
                 
                 if !showsPrivacyAgreement {
@@ -44,47 +44,6 @@ struct AerialOnboardingView: View {
         }
     }
     
-    // MARK: - Background
-    private var liquidGlassBackground: some View {
-        ZStack {
-            // Base gradient
-            LinearGradient(
-                colors: [
-                    Color(.systemBackground),
-                    Color.blue.opacity(0.08),
-                    Color.purple.opacity(0.06),
-                    Color(.systemBackground)
-                ],
-                startPoint: UnitPoint(x: 0.2 + backgroundGradientOffset * 0.1, y: 0.1),
-                endPoint: UnitPoint(x: 0.8 - backgroundGradientOffset * 0.1, y: 0.9)
-            )
-            
-            // Subtle overlay gradients
-            RadialGradient(
-                colors: [
-                    .blue.opacity(0.03),
-                    .purple.opacity(0.02),
-                    .clear
-                ],
-                center: UnitPoint(x: 0.3 + backgroundGradientOffset * 0.1, y: 0.3),
-                startRadius: 50,
-                endRadius: 300
-            )
-            .blendMode(.overlay)
-            
-            RadialGradient(
-                colors: [
-                    .mint.opacity(0.02),
-                    .cyan.opacity(0.03),
-                    .clear
-                ],
-                center: UnitPoint(x: 0.7 - backgroundGradientOffset * 0.1, y: 0.7),
-                startRadius: 50,
-                endRadius: 300
-            )
-            .blendMode(.overlay)
-        }
-    }
     
     // MARK: - Main Onboarding Content
     private func mainOnboardingContent(geometry: GeometryProxy) -> some View {
@@ -137,7 +96,7 @@ struct AerialOnboardingView: View {
             // Header
             VStack(spacing: 16) {
                 // Privacy icon with subtle glow
-                Image(systemName: "shield.checkered")
+                Image(systemName: "hand.raised.fill")
                     .font(.system(size: 60, weight: .ultraLight))
                     .foregroundStyle(
                         LinearGradient(
@@ -148,7 +107,6 @@ struct AerialOnboardingView: View {
                     )
                     .shadow(color: .blue.opacity(0.3), radius: 10, x: 0, y: 0)
                     .scaleEffect(iconScale)
-                    .rotationEffect(.degrees(iconRotation * 0.5))
                 
                 Text("Privacy & AI")
                     .font(.system(.largeTitle, design: .rounded, weight: .bold))
@@ -231,12 +189,9 @@ struct AerialOnboardingView: View {
                         completeOnboarding()
                     } label: {
                         HStack(spacing: 8) {
-                            Text("Agree and Continue")
+                            Text("Continue")
                                 .font(.headline)
                                 .fontWeight(.semibold)
-                            
-                            Image(systemName: "checkmark.circle.fill")
-                                .font(.headline)
                         }
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
@@ -299,8 +254,8 @@ struct AerialOnboardingView: View {
     
     // MARK: - Animations
     private func startBackgroundAnimation() {
-        withAnimation(.easeInOut(duration: 8.0).repeatForever(autoreverses: true)) {
-            backgroundGradientOffset = 1.0
+        withAnimation(.linear(duration: 20).repeatForever(autoreverses: false)) {
+            animationPhase = 2 * .pi
         }
     }
     
@@ -438,7 +393,6 @@ private struct AerialOnboardingPageView: View {
                 )
                 .frame(height: 120)
                 .scaleEffect(iconScale)
-                .rotationEffect(.degrees(iconRotation * page.rotationMultiplier))
                 .shadow(color: page.gradientColors.first?.opacity(0.3) ?? .clear, radius: 15, x: 0, y: 0)
             
             Spacer()
@@ -485,30 +439,56 @@ private struct AerialOnboardingPage {
             title: "Meet Aerial",
             description: "Your intelligent AI assistant for AirFrame. Get personalized help, real-time analysis, and seamless gimbal control through natural conversation.",
             gradientColors: [.blue, .cyan],
-            rotationMultiplier: 0.1
+            rotationMultiplier: 0.0
         ),
         AerialOnboardingPage(
             iconName: "message.badge.waveform",
             title: "Voice & Text Control",
             description: "Speak naturally or type your commands. Aerial understands context and provides intelligent responses to help you capture the perfect shot.",
             gradientColors: [.purple, .pink],
-            rotationMultiplier: 0.2
+            rotationMultiplier: 0.0
         ),
         AerialOnboardingPage(
             iconName: "camera.aperture",
             title: "Scene Analysis",
             description: "Advanced AI vision analyzes your shots and suggests optimal gimbal positioning, framing, and settings for professional results.",
             gradientColors: [.orange, .red],
-            rotationMultiplier: 0.15
+            rotationMultiplier: 0.0
         ),
         AerialOnboardingPage(
             iconName: "sparkles",
             title: "Intelligent Automation",
             description: "From calibration to complex maneuvers, Aerial handles the technical details so you can focus on creativity and storytelling.",
             gradientColors: [.green, .mint],
-            rotationMultiplier: 0.3
+            rotationMultiplier: 0.0
         )
     ]
+}
+
+// MARK: - Onboarding Animated Background
+private struct OnboardingAnimatedBackgroundView: View {
+    @Binding var animationPhase: CGFloat
+    
+    var body: some View {
+        // Clean gradient background with more visible animation
+        LinearGradient(
+            colors: [
+                Color(.systemBackground),
+                Color.blue.opacity(0.15),
+                Color.purple.opacity(0.12),
+                Color.mint.opacity(0.08),
+                Color(.systemBackground)
+            ],
+            startPoint: UnitPoint(
+                x: 0.5 + 0.3 * cos(animationPhase * 0.2),
+                y: 0.5 + 0.3 * sin(animationPhase * 0.15)
+            ),
+            endPoint: UnitPoint(
+                x: 0.5 - 0.3 * cos(animationPhase * 0.2),
+                y: 0.5 - 0.3 * sin(animationPhase * 0.15)
+            )
+        )
+    }
 }
 
 #Preview {

@@ -57,6 +57,31 @@ class APIKeyManager {
         return ""
     }
     
+    var openAIAPIKey: String {
+        // Try multiple sources in order of preference
+        
+        // 1. Environment variables
+        if let envKey = ProcessInfo.processInfo.environment["OPENAI_API_KEY"], !envKey.isEmpty {
+            print("🔑 OpenAI API key loaded from environment variables")
+            return envKey
+        }
+        
+        // 2. UserDefaults
+        if let userDefaultsKey = UserDefaults.standard.string(forKey: "OPENAI_API_KEY"), !userDefaultsKey.isEmpty {
+            print("🔑 OpenAI API key loaded from UserDefaults")
+            return userDefaultsKey
+        }
+        
+        // 3. Config file
+        if let configKey = loadFromConfigFile(key: "OPENAI_API_KEY"), !configKey.isEmpty {
+            print("🔑 OpenAI API key loaded from config file")
+            return configKey
+        }
+        
+        print("🚨 No OpenAI API key found")
+        return ""
+    }
+    
     // MARK: - Development Helpers
     
     func setClaudeAPIKey(_ key: String) {
@@ -69,9 +94,15 @@ class APIKeyManager {
         print("🔑 Gemini API key saved to UserDefaults")
     }
     
+    func setOpenAIAPIKey(_ key: String) {
+        UserDefaults.standard.set(key, forKey: "OPENAI_API_KEY")
+        print("🔑 OpenAI API key saved to UserDefaults")
+    }
+    
     func clearAllKeys() {
         UserDefaults.standard.removeObject(forKey: "ANTHROPIC_API_KEY")
         UserDefaults.standard.removeObject(forKey: "GEMINI_API_KEY")
+        UserDefaults.standard.removeObject(forKey: "OPENAI_API_KEY")
         print("🔑 All API keys cleared from UserDefaults")
     }
     
@@ -97,14 +128,23 @@ class APIKeyManager {
         !geminiAPIKey.isEmpty
     }
     
+    var hasValidOpenAIKey: Bool {
+        !openAIAPIKey.isEmpty
+    }
+    
     var isFullyConfigured: Bool {
-        hasValidClaudeKey && hasValidGeminiKey
+        hasValidClaudeKey && hasValidGeminiKey && hasValidOpenAIKey
+    }
+    
+    var hasAnyAIKey: Bool {
+        hasValidClaudeKey || hasValidOpenAIKey
     }
     
     func printStatus() {
         print("🔑 API Key Status:")
         print("  Claude: \(hasValidClaudeKey ? "✅ SET" : "❌ MISSING")")
+        print("  OpenAI: \(hasValidOpenAIKey ? "✅ SET" : "❌ MISSING")")
         print("  Gemini: \(hasValidGeminiKey ? "✅ SET" : "❌ MISSING")")
-        print("  Mode: \(isFullyConfigured ? "🤖 Full AI" : "📝 Demo")")
+        print("  Mode: \(hasAnyAIKey ? "🤖 AI Available" : "📝 Demo")")
     }
 }

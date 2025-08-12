@@ -7,9 +7,12 @@ import AVFoundation
 @Observable
 class AerialAIService {
     // MARK: - AI State
-    var messages: [ChatMessage] = []
+    var messages: [ChatMessage] = [] // Legacy property for backward compatibility
     var isLoading = false
     var errorMessage: String?
+    
+    // MARK: - Conversation Management
+    let conversationHistory = ConversationHistoryManager()
     
     // MARK: - Voice State
     var isListening = false
@@ -19,9 +22,28 @@ class AerialAIService {
     
     // MARK: - Services
     private let claudeService: ClaudeService
+    private let openAIService: OpenAIService
     private let geminiService = GeminiService()
     private let voiceService = VoiceService()
     let airFrameService = AirFrameToolService()
+    
+    // MARK: - AI Provider Selection
+    private var preferredProvider: AIProvider {
+        // Prefer OpenAI's new model if available, fallback to Claude
+        if APIKeyManager.shared.hasValidOpenAIKey {
+            return .openAI
+        } else if APIKeyManager.shared.hasValidClaudeKey {
+            return .claude
+        } else {
+            return .demo
+        }
+    }
+    
+    private enum AIProvider {
+        case openAI
+        case claude
+        case demo
+    }
     
     // MARK: - Dependencies
     private weak var airFrameModel: AirFrameModel?
@@ -30,26 +52,37 @@ class AerialAIService {
         self.airFrameModel = airFrameModel
         self.airFrameService.airFrameModel = airFrameModel
         self.claudeService = ClaudeService(toolService: airFrameService)
+        self.openAIService = OpenAIService(toolService: airFrameService)
         
-        // Check if API key is available
-        let hasAPIKey = APIKeyManager.shared.hasValidClaudeKey
-        let mode = hasAPIKey ? "Full AI Mode" : "Demo Mode"
+        // Check if API keys are available
+        let hasAnyAIKey = APIKeyManager.shared.hasAnyAIKey
+        let provider = preferredProvider
+        let mode = hasAnyAIKey ? "Full AI Mode" : "Demo Mode"
+        let providerName = provider == .openAI ? "OpenAI GPT-OSS-120B" : provider == .claude ? "Claude 4 Sonnet" : "Demo"
         
-        // Initialize with welcome message
-        messages.append(ChatMessage(
-            id: UUID(),
-            content: """
-            Hello! I'm Aerial, your AI assistant for the AirFrame. 
+        // Initialize with welcome message if no conversations exist
+        if conversationHistory.conversations.isEmpty || 
+           conversationHistory.currentConversation?.messages.isEmpty == true {
+            let welcomeMessage = ChatMessage(
+                id: UUID(),
+                content: """
+                Hello! I'm Aerial, your AI assistant for the AirFrame. 
+                
+                **Current Status: \(mode)** (\(providerName))
+                
+                I can help you control your gimbal, analyze scenes for perfect shots, and much more. How can I assist you today?
+                
+                \(hasAnyAIKey ? "🤖 Full AI functionality enabled!" : "📝 Running in demo mode - add your API keys for full functionality.")
+                """,
+                isUser: false,
+                timestamp: Date()
+            )
             
-            **Current Status: \(mode)**
-            
-            I can help you control your gimbal, analyze scenes for perfect shots, and much more. How can I assist you today?
-            
-            \(hasAPIKey ? "🤖 Full AI functionality enabled!" : "📝 Running in demo mode - add your API key for full functionality.")
-            """,
-            isUser: false,
-            timestamp: Date()
-        ))
+            conversationHistory.addMessageToCurrentConversation(welcomeMessage)
+        }
+        
+        // Sync messages with current conversation for backward compatibility
+        updateLegacyMessages()
     }
     
     // MARK: - Chat Methods
@@ -60,17 +93,34 @@ class AerialAIService {
             isUser: true,
             timestamp: Date()
         )
-        messages.append(userMessage)
+        
+        // Add to conversation history
+        conversationHistory.addMessageToCurrentConversation(userMessage)
+        updateLegacyMessages()
         
         isLoading = true
         errorMessage = nil
         
         do {
-            let response = try await claudeService.sendMessage(
-                content,
-                tools: airFrameService.availableTools(),
-                conversationHistory: messages
-            )
+            let response: String
+            let conversationMessages = conversationHistory.currentConversation?.messages ?? []
+            
+            switch preferredProvider {
+            case .openAI:
+                response = try await openAIService.sendMessage(
+                    content,
+                    tools: airFrameService.availableTools(),
+                    conversationHistory: conversationMessages
+                )
+            case .claude:
+                response = try await claudeService.sendMessage(
+                    content,
+                    tools: airFrameService.availableTools(),
+                    conversationHistory: conversationMessages
+                )
+            case .demo:
+                throw AIError.missingAPIKey
+            }
             
             let aiMessage = ChatMessage(
                 id: UUID(),
@@ -78,7 +128,10 @@ class AerialAIService {
                 isUser: false,
                 timestamp: Date()
             )
-            messages.append(aiMessage)
+            
+            // Add AI response to conversation history
+            conversationHistory.addMessageToCurrentConversation(aiMessage)
+            updateLegacyMessages()
         } catch AIError.missingAPIKey {
             // Demo mode - provide helpful responses without API
             let demoResponse = generateDemoResponse(for: content)
@@ -88,7 +141,9 @@ class AerialAIService {
                 isUser: false,
                 timestamp: Date()
             )
-            messages.append(aiMessage)
+            
+            conversationHistory.addMessageToCurrentConversation(aiMessage)
+            updateLegacyMessages()
             errorMessage = nil
         } catch {
             errorMessage = error.localizedDescription
@@ -257,6 +312,59 @@ class AerialAIService {
             Try asking me about gimbal status, calibration, or photo tips!
             """
         }
+    }
+    
+    // MARK: - Conversation Management
+    
+    func createNewConversation() {
+        let newConversation = conversationHistory.createNewConversation()
+        updateLegacyMessages()
+        
+        // Add welcome message to new conversation
+        let hasAnyAIKey = APIKeyManager.shared.hasAnyAIKey
+        let provider = preferredProvider
+        let mode = hasAnyAIKey ? "Full AI Mode" : "Demo Mode"
+        let providerName = provider == .openAI ? "OpenAI GPT-OSS-120B" : provider == .claude ? "Claude 4 Sonnet" : "Demo"
+        
+        let welcomeMessage = ChatMessage(
+            id: UUID(),
+            content: """
+            Hello! I'm Aerial, your AI assistant for the AirFrame. 
+            
+            **Current Status: \(mode)** (\(providerName))
+            
+            I can help you control your gimbal, analyze scenes for perfect shots, and much more. How can I assist you today?
+            
+            \(hasAnyAIKey ? "🤖 Full AI functionality enabled!" : "📝 Running in demo mode - add your API keys for full functionality.")
+            """,
+            isUser: false,
+            timestamp: Date()
+        )
+        
+        conversationHistory.addMessageToCurrentConversation(welcomeMessage)
+        updateLegacyMessages()
+    }
+    
+    func switchToConversation(_ conversation: Conversation) {
+        conversationHistory.switchToConversation(conversation)
+        updateLegacyMessages()
+    }
+    
+    func deleteConversation(_ conversation: Conversation) {
+        conversationHistory.deleteConversation(conversation)
+        updateLegacyMessages()
+    }
+    
+    func renameCurrentConversation(to title: String) {
+        guard let current = conversationHistory.currentConversation else { return }
+        conversationHistory.renameConversation(current, to: title)
+    }
+    
+    // MARK: - Private Helpers
+    
+    private func updateLegacyMessages() {
+        // Keep the legacy messages property in sync for backward compatibility
+        messages = conversationHistory.currentConversation?.messages ?? []
     }
 }
 

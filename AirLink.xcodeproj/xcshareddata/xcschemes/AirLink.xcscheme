@@ -74,18 +74,6 @@
             ReferencedContainer = "container:AirLink.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <EnvironmentVariables>
-         <EnvironmentVariable
-            key = "ANTHROPIC_API_KEY"
-            value = "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"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-         <EnvironmentVariable
-            key = "GEMINI_API_KEY"
-            value = "AIzaSyCy2kp4bx3wn9WG6BW2KCOGq7YhAu6yonE"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
